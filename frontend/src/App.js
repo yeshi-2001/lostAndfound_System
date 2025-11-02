@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Login from './components/Login';
 import Register from './components/Register';
 import ForgotPassword from './components/ForgotPassword';
@@ -14,9 +14,10 @@ import Verification from './components/Verification';
 import Navbar from './components/Navbar';
 import './App.css';
 
-function App() {
+function AppContent() {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem('token'));
+  const location = useLocation();
 
   useEffect(() => {
     if (token) {
@@ -42,9 +43,8 @@ function App() {
   };
 
   return (
-    <Router>
-      <div className="App">
-        {user && <Navbar user={user} onLogout={logout} />}
+    <div className="App">
+      {user && location.pathname !== '/dashboard' && <Navbar user={user} onLogout={logout} />}
         
         <Routes>
           <Route 
@@ -96,7 +96,14 @@ function App() {
             element={user ? <Navigate to="/dashboard" /> : <Navigate to="/login" />} 
           />
         </Routes>
-      </div>
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <Router>
+      <AppContent />
     </Router>
   );
 }
