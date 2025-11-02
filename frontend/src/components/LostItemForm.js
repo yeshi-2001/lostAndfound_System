@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { itemsAPI } from '../services/api';
 
 const LostItemForm = ({ token, user }) => {
@@ -624,20 +624,21 @@ const LostItemForm = ({ token, user }) => {
   }
 
   return (
-    <div style={styles.container}>
-      <div style={styles.header}>
-        <button 
-          style={styles.backButton}
-          onClick={() => navigate('/dashboard')}
-        >
-          Back
-        </button>
-        <h1 style={styles.title}>Report Lost Item</h1>
-        <p style={styles.subtitle}>We're here to help you find your item!</p>
-        <p style={styles.searchNote}>🔍 We'll search our database for matches</p>
-      </div>
+    <div style={{minHeight: '100vh', background: '#EFF6FF', padding: 20, fontFamily: 'Inter, sans-serif'}}>
+      <div style={{maxWidth: 800, margin: '0 auto'}}>
+        <div style={{marginBottom: 30}}>
+          <button 
+            style={{background: 'none', border: 'none', color: '#03045E', fontSize: 16, cursor: 'pointer', marginBottom: 20, display: 'flex', alignItems: 'center', gap: 8}}
+            onClick={() => navigate('/dashboard')}
+          >
+            ← Back
+          </button>
+          <h1 style={{fontSize: 32, fontWeight: '800', margin: '0 0 10px 0'}}>Report Lost Item</h1>
+          <p style={{fontSize: 18, color: '#666', margin: '0 0 8px 0'}}>We're here to help you find your item!</p>
+          <p style={{fontSize: 16, color: '#03045E', margin: 0, display: 'flex', alignItems: 'center', gap: 8}}>🔍 We'll search our database for matches</p>
+        </div>
 
-      <form style={styles.form} onSubmit={handleSubmit}>
+        <form style={{background: 'white', borderRadius: 16, padding: 40, boxShadow: '0 10px 25px rgba(0,0,0,0.1)'}} onSubmit={handleSubmit}>
         {/* Basic Information */}
         <div style={styles.section}>
           <h3 style={styles.sectionTitle}>BASIC INFORMATION</h3>
@@ -999,7 +1000,8 @@ const LostItemForm = ({ token, user }) => {
             )}
           </button>
         </div>
-      </form>
+        </form>
+      </div>
     </div>
   );
 };

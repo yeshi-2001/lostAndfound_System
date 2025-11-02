@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 const Profile = ({ user, token, onLogout }) => {
   const navigate = useNavigate();
@@ -472,13 +472,16 @@ const Profile = ({ user, token, onLogout }) => {
   const badge = getContributionBadge(profileData.statistics.contribution_score);
 
   return (
-    <div style={styles.container}>
-      <div style={styles.content}>
-        <div style={styles.header}>
-          <button style={styles.backButton} onClick={() => navigate('/dashboard')}>
+    <div style={{minHeight: '100vh', background: '#EFF6FF', padding: 20, fontFamily: 'Inter, sans-serif'}}>
+      <div style={{maxWidth: 1000, margin: '0 auto'}}>
+        <div style={{marginBottom: 30}}>
+          <button 
+            style={{background: 'none', border: 'none', color: '#03045E', fontSize: 16, cursor: 'pointer', marginBottom: 20, display: 'flex', alignItems: 'center', gap: 8}}
+            onClick={() => navigate('/dashboard')}
+          >
             ← Back to Dashboard
           </button>
-          <h1 style={styles.title}>My Profile</h1>
+          <h1 style={{fontSize: 32, fontWeight: '800', margin: 0}}>My Profile</h1>
         </div>
 
         {message && (
@@ -491,7 +494,7 @@ const Profile = ({ user, token, onLogout }) => {
         )}
 
         {/* Profile Header */}
-        <div style={styles.section}>
+        <div style={{background: 'white', borderRadius: 16, padding: 30, marginBottom: 20, boxShadow: '0 4px 6px rgba(0,0,0,0.1)'}}>
           <div style={styles.profileHeader}>
             <div style={styles.avatar}>
               {profileData.name.split(' ').map(n => n[0]).join('')}
@@ -509,7 +512,7 @@ const Profile = ({ user, token, onLogout }) => {
         </div>
 
         {/* Personal Information */}
-        <div style={styles.section}>
+        <div style={{background: 'white', borderRadius: 16, padding: 30, marginBottom: 20, boxShadow: '0 4px 6px rgba(0,0,0,0.1)'}}>
           <div style={styles.sectionTitle}>
             Personal Information
             {!editMode && (
@@ -637,7 +640,7 @@ const Profile = ({ user, token, onLogout }) => {
         </div>
 
         {/* Activity Statistics */}
-        <div style={styles.section}>
+        <div style={{background: 'white', borderRadius: 16, padding: 30, marginBottom: 20, boxShadow: '0 4px 6px rgba(0,0,0,0.1)'}}>
           <div style={styles.sectionTitle}>Your Activity</div>
           
           <div style={styles.statsGrid}>
@@ -675,7 +678,7 @@ const Profile = ({ user, token, onLogout }) => {
         </div>
 
         {/* Account Actions */}
-        <div style={styles.section}>
+        <div style={{background: 'white', borderRadius: 16, padding: 30, marginBottom: 20, boxShadow: '0 4px 6px rgba(0,0,0,0.1)'}}>
           <div style={styles.sectionTitle}>Account</div>
           
           

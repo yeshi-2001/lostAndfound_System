@@ -13,6 +13,9 @@ const Dashboard = ({ user }) => {
     lost: []
   });
   const [loading, setLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [showResults, setShowResults] = useState(false);
 
   useEffect(() => {
     loadDashboardData();
@@ -41,6 +44,39 @@ const Dashboard = ({ user }) => {
     }
   };
 
+  const handleSearch = async (term) => {
+    if (!term.trim()) {
+      setSearchResults([]);
+      return;
+    }
+
+    try {
+      // Search in both found and lost items
+      const [foundResponse, lostResponse] = await Promise.all([
+        itemsAPI.getFoundItems().catch(() => ({ data: { items: [] } })),
+        itemsAPI.getLostItems().catch(() => ({ data: { items: [] } }))
+      ]);
+
+      const allItems = [
+        ...(foundResponse.data.items || []).map(item => ({ ...item, type: 'Found' })),
+        ...(lostResponse.data.items || []).map(item => ({ ...item, type: 'Lost' }))
+      ];
+
+      // Filter items based on search term
+      const filtered = allItems.filter(item => 
+        item.item_name?.toLowerCase().includes(term.toLowerCase()) ||
+        item.category?.toLowerCase().includes(term.toLowerCase()) ||
+        item.location?.toLowerCase().includes(term.toLowerCase()) ||
+        item.description?.toLowerCase().includes(term.toLowerCase())
+      );
+
+      setSearchResults(filtered.slice(0, 10)); // Limit to 10 results
+    } catch (error) {
+      console.error('Search error:', error);
+      setSearchResults([]);
+    }
+  };
+
   if (loading) {
     return (
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
@@ -50,114 +86,185 @@ const Dashboard = ({ user }) => {
   }
 
   return (
-    <div style={{width: '100%', minHeight: '100vh', position: 'relative', background: 'white', overflow: 'hidden'}}>
-      <div style={{width: 326, height: 832, left: 0, top: 0, position: 'absolute', background: '#EBF5FD'}} />
-      <div style={{width: 523, height: 33, left: 402, top: 135, position: 'absolute', opacity: 0.60, boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)', borderRadius: 10, border: '1px black solid'}} />
-      <div style={{width: 28.61, height: 28.61, left: 420.38, top: 137.69, position: 'absolute', overflow: 'hidden', borderRadius: 10}}>
-          <div style={{width: 15.90, height: 15.90, left: 3.58, top: 3.58, position: 'absolute', background: 'rgba(0, 0, 0, 0.16)'}} />
-          <div style={{width: 17.88, height: 17.88, left: 3.58, top: 3.58, position: 'absolute', outline: '1.50px rgba(0, 0, 0, 0.80) solid', outlineOffset: '-0.75px'}} />
-      </div>
-      <div style={{width: 122.22, left: 593.86, top: 143, position: 'absolute', color: 'rgba(0, 0, 0, 0.80)', fontSize: 13, fontFamily: 'Inter', fontWeight: '400', wordWrap: 'break-word'}}>Search here</div>
-      <div style={{width: 111, height: 30, left: 1130, top: 135, position: 'absolute', borderRadius: 6, border: '2px black solid'}} />
-      <div style={{width: 52, height: 20.45, left: 1160, top: 143.98, position: 'absolute', color: 'black', fontSize: 12, fontFamily: 'Inter', fontWeight: '400', wordWrap: 'break-word'}}>Calendar</div>
-      <div style={{width: 285, height: 54, left: 20, top: 157, position: 'absolute', background: 'white', boxShadow: '0px 4px 4px 6px rgba(0, 0, 0, 0.25)', borderRadius: 15}} />
-      <div style={{left: 96, top: 172, position: 'absolute', color: '#03045E', fontSize: 16, fontFamily: 'Inter', fontWeight: '700', wordWrap: 'break-word'}}>Dashboard</div>
-      
-      <Link to="/found-item" style={{textDecoration: 'none'}}>
-        <div style={{left: 86, top: 252, position: 'absolute', color: '#03045E', fontSize: 16, fontFamily: 'Inter', fontWeight: '700', wordWrap: 'break-word', cursor: 'pointer'}}>Report Found</div>
-      </Link>
-      
-      <Link to="/lost-item" style={{textDecoration: 'none'}}>
-        <div style={{left: 86, top: 317, position: 'absolute', color: '#03045E', fontSize: 16, fontFamily: 'Inter', fontWeight: '700', wordWrap: 'break-word', cursor: 'pointer'}}>Report Lost</div>
-      </Link>
-      
-      <Link to="/matches" style={{textDecoration: 'none'}}>
-        <div style={{left: 83, top: 382, position: 'absolute', color: '#03045E', fontSize: 16, fontFamily: 'Inter', fontWeight: '700', wordWrap: 'break-word', cursor: 'pointer'}}>My Matches</div>
-      </Link>
-      
-      <div style={{width: 473, left: 725, top: 20, position: 'absolute', color: 'black', fontSize: 35, fontFamily: 'Inter', fontWeight: '800', wordWrap: 'break-word'}}>Welcome Back {user?.name || 'User'} 👋</div>
-      <div style={{left: 711, top: 69, position: 'absolute', color: 'black', fontSize: 18, fontFamily: 'Inter', fontWeight: '500', wordWrap: 'break-word'}}>Manage your lost and found items from your dashboard</div>
-      <div style={{width: 151, height: 30, left: 962, top: 135, position: 'absolute', background: '#EBF5FD', borderRadius: 10, border: '1px black solid'}} />
-      <div style={{width: 80, height: 30, left: 962, top: 135, position: 'absolute', background: 'white', borderTopLeftRadius: 10, borderTopRightRadius: 12, borderBottomRightRadius: 12, borderBottomLeftRadius: 10, border: '1px black solid'}} />
-      <div style={{left: 979, top: 140, position: 'absolute', color: 'black', fontSize: 14, fontFamily: 'Inter', fontWeight: '500', wordWrap: 'break-word'}}>Weekly</div>
-      <div style={{left: 1056, top: 140, position: 'absolute', color: 'black', fontSize: 14, fontFamily: 'Inter', fontWeight: '500', wordWrap: 'break-word'}}>Daily</div>
-      <div style={{width: 70.27, height: 70.27, left: 5.75, top: 21.43, position: 'absolute', background: 'white', borderRadius: 9999}} />
-      <img style={{width: 84, height: 75.38, left: 0, top: 16, position: 'absolute'}} src="https://placehold.co/84x75" />
-      <div style={{left: 111, top: 36, position: 'absolute', color: '#03045E', fontSize: 35, fontFamily: 'Inter', fontWeight: '800', wordWrap: 'break-word'}}>Back2U</div>
-      
-      <Link to="/profile" style={{textDecoration: 'none'}}>
-        <div style={{left: 78, top: 626, position: 'absolute', color: '#03045E', fontSize: 16, fontFamily: 'Inter', fontWeight: '700', wordWrap: 'break-word', cursor: 'pointer'}}>Settings</div>
-        <img style={{width: 40, height: 40, left: 22, top: 614, position: 'absolute'}} src="https://placehold.co/40x40" />
-      </Link>
-      
-      <div style={{width: 25, height: 25, left: 292, top: 22, position: 'absolute'}}>
-          <div style={{width: 18.75, height: 18.75, left: 3.12, top: 3.12, position: 'absolute', background: 'black'}} />
-      </div>
-      <div style={{left: 83, top: 678, position: 'absolute', color: '#03045E', fontSize: 16, fontFamily: 'Inter', fontWeight: '700', wordWrap: 'break-word'}}>Help</div>
-      <img style={{width: 40, height: 40, left: 25, top: 667, position: 'absolute'}} src="https://placehold.co/40x40" />
-      <div style={{width: 1279, height: 0, left: 325, top: 111, position: 'absolute', boxShadow: '4px 4px 4px ', outline: '2px rgba(0, 0, 0, 0.50) solid', outlineOffset: '-1px', filter: 'blur(2px)'}} />
-      <div style={{width: 853, height: 206, left: 386, top: 196, position: 'absolute', background: 'rgba(0, 119, 182, 0.50)', borderRadius: 20}} />
-      <div style={{width: 150.77, left: 412.85, top: 207, position: 'absolute', color: '#03045E', fontSize: 20, fontFamily: 'Inter', fontWeight: '800', wordWrap: 'break-word'}}>Your Statistics</div>
-      <div style={{width: 166.26, height: 100, left: 500.63, top: 249, position: 'absolute', background: '#EBF5FD', boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)', borderRadius: 12, border: '2px white solid'}} />
-      <div style={{width: 13.42, left: 570.85, top: 296, position: 'absolute', color: 'black', fontSize: 25, fontFamily: 'Inter', fontWeight: '600', wordWrap: 'break-word'}}>{stats.foundItems}</div>
-      <div style={{width: 100.17, left: 525.41, top: 256, position: 'absolute', color: 'black', fontSize: 18, fontFamily: 'Inter', fontWeight: '600', wordWrap: 'break-word'}}>Item Found</div>
-      <div style={{width: 166.26, height: 100, left: 711.30, top: 249, position: 'absolute', background: '#EBF5FD', boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)', borderRadius: 12, border: '2px white solid'}} />
-      <div style={{width: 16.52, left: 789.78, top: 296, position: 'absolute', color: 'black', fontSize: 25, fontFamily: 'Inter', fontWeight: '600', wordWrap: 'break-word'}}>{stats.lostItems}</div>
-      <div style={{width: 83.65, left: 748.47, top: 256, position: 'absolute', color: 'black', fontSize: 18, fontFamily: 'Inter', fontWeight: '600', wordWrap: 'break-word'}}>Item Lost</div>
-      <div style={{width: 186.47, height: 100, left: 925.06, top: 249, position: 'absolute', background: '#EBF5FD', boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)', borderRadius: 12, border: '2px white solid'}} />
-      <div style={{width: 17.93, left: 1015, top: 296, position: 'absolute', color: 'black', fontSize: 25, fontFamily: 'Inter', fontWeight: '600', wordWrap: 'break-word'}}>{stats.matches}</div>
-      <div style={{width: 163.16, left: 937.46, top: 256, position: 'absolute', color: 'black', fontSize: 18, fontFamily: 'Inter', fontWeight: '600', wordWrap: 'break-word'}}>Potential Matches</div>
-      
-      <Link to="/found-item" style={{textDecoration: 'none'}}>
-        <div style={{width: 208, height: 203, left: 386, top: 440, position: 'absolute', background: '#C7F7D2', boxShadow: '4px 4px 4px ', borderRadius: 20, border: '1px black solid', cursor: 'pointer'}} />
-        <div style={{width: 173, height: 105, left: 399, top: 509, position: 'absolute', textAlign: 'center', color: 'black', fontSize: 14, fontFamily: 'Inter', fontWeight: '500', wordWrap: 'break-word'}}><br/>Found something?<br/> Help someone get their item back!</div>
-        <div style={{width: 166, height: 38.96, left: 403, top: 472.81, position: 'absolute'}}><span style={{color: 'black', fontSize: 16, fontFamily: 'Inter', fontWeight: '500', wordWrap: 'break-word'}}>📱 </span><span style={{color: 'black', fontSize: 16, fontFamily: 'Inter', fontWeight: '800', wordWrap: 'break-word'}}>Report Found Item</span></div>
-      </Link>
-      
-      <Link to="/lost-item" style={{textDecoration: 'none'}}>
-        <div style={{width: 208, height: 203, left: 718, top: 440, position: 'absolute', background: '#C7EFF7', boxShadow: '4px 4px 4px ', borderRadius: 20, border: '1px black solid', cursor: 'pointer'}} />
-        <div style={{width: 162, left: 737, top: 506, position: 'absolute', textAlign: 'center', color: 'black', fontSize: 14, fontFamily: 'Inter', fontWeight: '500', wordWrap: 'break-word'}}>Lost something? <br/>Let others know what you're looking for!<br/></div>
-        <div style={{width: 151.23, left: 740.20, top: 456, position: 'absolute'}}><span style={{color: 'black', fontSize: 16, fontFamily: 'Inter', fontWeight: '500', wordWrap: 'break-word'}}>🔍</span><span style={{color: 'black', fontSize: 16, fontFamily: 'Inter', fontWeight: '800', wordWrap: 'break-word'}}> Report Lost Item</span></div>
-      </Link>
-      
-      <Link to="/matches" style={{textDecoration: 'none'}}>
-        <div style={{width: 208, height: 203, left: 1031, top: 440, position: 'absolute', background: 'rgba(0, 0, 0, 0.43)', boxShadow: '4px 4px 4px ', borderRadius: 20, border: '1px black solid', cursor: 'pointer'}} />
-        <div style={{width: 138, left: 1066, top: 498, position: 'absolute', textAlign: 'center', color: 'black', fontSize: 14, fontFamily: 'Inter', fontWeight: '500', wordWrap: 'break-word'}}><br/>Check potential matches and verify ownership</div>
-        <div style={{left: 1055, top: 456, position: 'absolute'}}><span style={{color: 'black', fontSize: 16, fontFamily: 'Inter', fontWeight: '500', wordWrap: 'break-word'}}>🎯 </span><span style={{color: 'black', fontSize: 16, fontFamily: 'Inter', fontWeight: '700', wordWrap: 'break-word'}}>View Matches</span></div>
-      </Link>
-      
-      {/* Recent Found Items */}
-      <div style={{width: 316, height: 211, left: 1269, top: 135, position: 'absolute', borderRadius: 20, border: '1px black solid', background: 'white'}} />
-      <div style={{width: 157, height: 30.60, left: 1361, top: 159, position: 'absolute', color: 'black', fontSize: 16, fontFamily: 'Inter', fontWeight: '800', wordWrap: 'break-word'}}>Recent Found Items</div>
-      
-      {recentItems.found.length > 0 ? (
-        recentItems.found.map((item, index) => (
-          <div key={item.id || index} style={{left: 1280, top: 185 + (index * 40), position: 'absolute', width: 290}}>
-            <div style={{fontSize: 14, fontWeight: '600', color: '#333', marginBottom: 2}}>{item.item_name || 'Unknown Item'}</div>
-            <div style={{fontSize: 12, color: '#666'}}>{item.category || 'Category'} • {item.location || 'Location'}</div>
+    <div style={{display: 'flex', height: '100vh', fontFamily: 'Inter, sans-serif', background: 'white'}}>
+      {/* Sidebar */}
+      <div style={{width: 280, background: '#EBF5FD', padding: 20, display: 'flex', flexDirection: 'column'}}>
+        {/* Logo */}
+        <div style={{display: 'flex', alignItems: 'center', marginBottom: 40}}>
+          <img style={{width: 80, height: 80, objectFit: 'contain', marginRight: 15}} src="/image/logo2%201.png" alt="Logo" />
+          <h1 style={{color: '#03045E', fontSize: 28, fontWeight: '800', margin: 0}}>Back2U</h1>
+        </div>
+        
+        {/* Navigation */}
+        <nav style={{flex: 1}}>
+          <div style={{background: 'white', padding: 15, borderRadius: 15, marginBottom: 20, boxShadow: '0 4px 8px rgba(0,0,0,0.1)'}}>
+            <div style={{color: '#03045E', fontSize: 16, fontWeight: '700'}}>Dashboard</div>
           </div>
-        ))
-      ) : (
-        <div style={{left: 1290, top: 200, position: 'absolute', fontSize: 12, color: '#999'}}>No found items yet</div>
-      )}
-      
-      {/* Recent Lost Items */}
-      <div style={{width: 316, height: 204, left: 1269, top: 431, position: 'absolute', borderRadius: 20, border: '1px black solid', background: 'white'}} />
-      <div style={{width: 142, height: 29.59, left: 1369, top: 454, position: 'absolute', color: 'black', fontSize: 16, fontFamily: 'Inter', fontWeight: '800', wordWrap: 'break-word'}}>Recent Lost Items</div>
-      
-      {recentItems.lost.length > 0 ? (
-        recentItems.lost.map((item, index) => (
-          <div key={item.id || index} style={{left: 1280, top: 480 + (index * 40), position: 'absolute', width: 290}}>
-            <div style={{fontSize: 14, fontWeight: '600', color: '#333', marginBottom: 2}}>{item.item_name || 'Unknown Item'}</div>
-            <div style={{fontSize: 12, color: '#666'}}>{item.category || 'Category'} • {item.location || 'Location'}</div>
+          
+          <Link to="/found-item" style={{textDecoration: 'none', display: 'block', padding: '15px 0', color: '#03045E', fontSize: 16, fontWeight: '700'}}>Report Found</Link>
+          <Link to="/lost-item" style={{textDecoration: 'none', display: 'block', padding: '15px 0', color: '#03045E', fontSize: 16, fontWeight: '700'}}>Report Lost</Link>
+          <Link to="/matches" style={{textDecoration: 'none', display: 'block', padding: '15px 0', color: '#03045E', fontSize: 16, fontWeight: '700'}}>My Matches</Link>
+        </nav>
+        
+        {/* Bottom Menu */}
+        <div style={{marginTop: 'auto'}}>
+          <Link to="/profile" style={{textDecoration: 'none', display: 'flex', alignItems: 'center', padding: '10px 0', color: '#03045E', fontSize: 16, fontWeight: '700'}}>
+            <img style={{width: 24, height: 24, marginRight: 10}} src="/image/Gear.png" alt="Settings" />
+            Settings
+          </Link>
+          <div style={{display: 'flex', alignItems: 'center', padding: '10px 0', color: '#03045E', fontSize: 16, fontWeight: '700', cursor: 'pointer'}} onClick={() => window.location.href = '/login'}>
+            <img style={{width: 24, height: 24, marginRight: 10}} src="/image/exit.svg" alt="Logout" />
+            Log Out
           </div>
-        ))
-      ) : (
-        <div style={{left: 1290, top: 500, position: 'absolute', fontSize: 12, color: '#999'}}>No lost items yet</div>
-      )}
+        </div>
+      </div>
       
-      <div style={{left: 73, top: 729, position: 'absolute', color: '#03045E', fontSize: 16, fontFamily: 'Inter', fontWeight: '700', wordWrap: 'break-word', cursor: 'pointer'}} onClick={() => window.location.href = '/login'}>Log Out</div>
-      <img style={{width: 40, height: 40, left: 23, top: 719, position: 'absolute'}} src="https://placehold.co/40x40" />
+      {/* Main Content */}
+      <div style={{flex: 1, padding: 30, overflow: 'auto'}} onClick={() => setShowResults(false)}>
+        {/* Header */}
+        <div style={{marginBottom: 30}}>
+          <h1 style={{fontSize: 32, fontWeight: '800', margin: '0 0 10px 0'}}>Welcome Back {user?.name || 'User'} 👋</h1>
+          <p style={{fontSize: 18, color: '#666', margin: 0}}>Manage your lost and found items from your dashboard</p>
+        </div>
+        
+        {/* Search Bar */}
+        <div style={{display: 'flex', gap: 20, marginBottom: 30}}>
+          <div style={{flex: 1, position: 'relative'}}>
+            <input 
+              type="text" 
+              placeholder="Search items, categories, locations..." 
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                handleSearch(e.target.value);
+              }}
+              onFocus={() => setShowResults(true)}
+              style={{
+                width: '100%', 
+                padding: '12px 40px 12px 15px', 
+                border: '1px solid #ddd', 
+                borderRadius: 10, 
+                fontSize: 14,
+                boxSizing: 'border-box'
+              }} 
+            />
+            <img style={{position: 'absolute', right: 15, top: '50%', transform: 'translateY(-50%)', width: 16, height: 16}} src="/image/si_search-duotone.svg" alt="Search" />
+            
+            {/* Search Results Dropdown */}
+            {showResults && searchTerm && (
+              <div style={{
+                position: 'absolute',
+                top: '100%',
+                left: 0,
+                right: 0,
+                background: 'white',
+                border: '1px solid #ddd',
+                borderRadius: 10,
+                marginTop: 5,
+                maxHeight: 300,
+                overflowY: 'auto',
+                zIndex: 1000,
+                boxShadow: '0 4px 8px rgba(0,0,0,0.1)'
+              }}>
+                {searchResults.length > 0 ? (
+                  searchResults.map((item, index) => (
+                    <div key={index} style={{
+                      padding: 15,
+                      borderBottom: index < searchResults.length - 1 ? '1px solid #eee' : 'none',
+                      cursor: 'pointer',
+                      ':hover': {background: '#f5f5f5'}
+                    }}>
+                      <div style={{fontWeight: '600', marginBottom: 5}}>{item.item_name}</div>
+                      <div style={{fontSize: 12, color: '#666'}}>{item.category} • {item.location} • {item.type}</div>
+                    </div>
+                  ))
+                ) : (
+                  <div style={{padding: 15, color: '#999', textAlign: 'center'}}>No items found</div>
+                )}
+              </div>
+            )}
+          </div>
+          <div style={{padding: '10px 20px', border: '2px solid black', borderRadius: 6, background: 'white', fontSize: 12, display: 'flex', alignItems: 'center'}}>
+            📅 {new Date().toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' })}
+          </div>
+        </div>
+        
+        {/* Statistics */}
+        <div style={{background: 'rgba(0, 119, 182, 0.50)', borderRadius: 20, padding: 30, marginBottom: 30}}>
+          <h2 style={{color: '#03045E', fontSize: 20, fontWeight: '800', marginBottom: 20}}>Your Statistics</h2>
+          <div style={{display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20}}>
+            <div style={{background: '#EBF5FD', padding: 20, borderRadius: 12, textAlign: 'center', border: '2px solid white'}}>
+              <div style={{fontSize: 24, fontWeight: '600', color: 'black', marginBottom: 5}}>{stats.foundItems}</div>
+              <div style={{fontSize: 16, fontWeight: '600', color: 'black'}}>Items Found</div>
+            </div>
+            <div style={{background: '#EBF5FD', padding: 20, borderRadius: 12, textAlign: 'center', border: '2px solid white'}}>
+              <div style={{fontSize: 24, fontWeight: '600', color: 'black', marginBottom: 5}}>{stats.lostItems}</div>
+              <div style={{fontSize: 16, fontWeight: '600', color: 'black'}}>Items Lost</div>
+            </div>
+            <div style={{background: '#EBF5FD', padding: 20, borderRadius: 12, textAlign: 'center', border: '2px solid white'}}>
+              <div style={{fontSize: 24, fontWeight: '600', color: 'black', marginBottom: 5}}>{stats.matches}</div>
+              <div style={{fontSize: 16, fontWeight: '600', color: 'black'}}>Potential Matches</div>
+            </div>
+          </div>
+        </div>
+        
+        {/* Action Cards */}
+        <div style={{display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20, marginBottom: 30}}>
+          <Link to="/found-item" style={{textDecoration: 'none'}}>
+            <div style={{background: '#C7F7D2', padding: 25, borderRadius: 20, border: '1px solid black', cursor: 'pointer', height: 120, display: 'flex', flexDirection: 'column', justifyContent: 'space-between'}}>
+              <div style={{fontSize: 16, fontWeight: '800', color: 'black'}}>📱 Report Found Item</div>
+              <div style={{fontSize: 14, color: 'black', textAlign: 'center'}}>Found something?<br/>Help someone get their item back!</div>
+            </div>
+          </Link>
+          
+          <Link to="/lost-item" style={{textDecoration: 'none'}}>
+            <div style={{background: '#C7EFF7', padding: 25, borderRadius: 20, border: '1px solid black', cursor: 'pointer', height: 120, display: 'flex', flexDirection: 'column', justifyContent: 'space-between'}}>
+              <div style={{fontSize: 16, fontWeight: '800', color: 'black'}}>🔍 Report Lost Item</div>
+              <div style={{fontSize: 14, color: 'black', textAlign: 'center'}}>Lost something?<br/>Let others know what you're looking for!</div>
+            </div>
+          </Link>
+          
+          <Link to="/matches" style={{textDecoration: 'none'}}>
+            <div style={{background: 'rgba(0, 0, 0, 0.43)', padding: 25, borderRadius: 20, border: '1px solid black', cursor: 'pointer', height: 120, display: 'flex', flexDirection: 'column', justifyContent: 'space-between'}}>
+              <div style={{fontSize: 16, fontWeight: '700', color: 'white'}}>🎯 View Matches</div>
+              <div style={{fontSize: 14, color: 'white', textAlign: 'center'}}>Check potential matches and verify ownership</div>
+            </div>
+          </Link>
+        </div>
+        
+        {/* Recent Items */}
+        <div style={{display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 20}}>
+          {/* Recent Found Items */}
+          <div style={{background: 'white', border: '1px solid black', borderRadius: 20, padding: 20}}>
+            <h3 style={{fontSize: 16, fontWeight: '800', marginBottom: 15}}>Recent Found Items</h3>
+            {recentItems.found.length > 0 ? (
+              recentItems.found.map((item, index) => (
+                <div key={item.id || index} style={{marginBottom: 15, paddingBottom: 10, borderBottom: index < recentItems.found.length - 1 ? '1px solid #eee' : 'none'}}>
+                  <div style={{fontSize: 14, fontWeight: '600', color: '#333', marginBottom: 2}}>{item.item_name || 'Unknown Item'}</div>
+                  <div style={{fontSize: 12, color: '#666'}}>{item.category || 'Category'} • {item.location || 'Location'}</div>
+                </div>
+              ))
+            ) : (
+              <div style={{fontSize: 12, color: '#999', textAlign: 'center', padding: 20}}>No found items yet</div>
+            )}
+          </div>
+          
+          {/* Recent Lost Items */}
+          <div style={{background: 'white', border: '1px solid black', borderRadius: 20, padding: 20}}>
+            <h3 style={{fontSize: 16, fontWeight: '800', marginBottom: 15}}>Recent Lost Items</h3>
+            {recentItems.lost.length > 0 ? (
+              recentItems.lost.map((item, index) => (
+                <div key={item.id || index} style={{marginBottom: 15, paddingBottom: 10, borderBottom: index < recentItems.lost.length - 1 ? '1px solid #eee' : 'none'}}>
+                  <div style={{fontSize: 14, fontWeight: '600', color: '#333', marginBottom: 2}}>{item.item_name || 'Unknown Item'}</div>
+                  <div style={{fontSize: 12, color: '#666'}}>{item.category || 'Category'} • {item.location || 'Location'}</div>
+                </div>
+              ))
+            ) : (
+              <div style={{fontSize: 12, color: '#999', textAlign: 'center', padding: 20}}>No lost items yet</div>
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { verificationAPI, returnsAPI } from '../services/api';
 
 const Matches = ({ user, token }) => {
+  const navigate = useNavigate();
   const [matches, setMatches] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -42,55 +43,62 @@ const Matches = ({ user, token }) => {
   }
 
   return (
-    <div className="container matches-container">
-      <h1 style={{ textAlign: 'center', marginBottom: '30px' }}>
-        🎯 Your Potential Matches
-      </h1>
-
-      {error && <div className="alert alert-error">{error}</div>}
-
-      {matches.length === 0 ? (
-        <div className="card" style={{ textAlign: 'center', padding: '40px' }}>
-          <h3>No matches found yet</h3>
-          <p style={{ color: '#666', marginBottom: '20px' }}>
-            We haven't found any potential matches yet. 
-            Don't worry, we'll notify you as soon as there's a match!
-          </p>
-          <Link to="/lost-item" className="btn btn-primary">
-            Report Another Lost Item
-          </Link>
+    <div style={{minHeight: '100vh', background: '#EFF6FF', padding: 20, fontFamily: 'Inter, sans-serif'}}>
+      <div style={{maxWidth: 1200, margin: '0 auto'}}>
+        <div style={{marginBottom: 30}}>
+          <button 
+            style={{background: 'none', border: 'none', color: '#03045E', fontSize: 16, cursor: 'pointer', marginBottom: 20, display: 'flex', alignItems: 'center', gap: 8}}
+            onClick={() => navigate('/dashboard')}
+          >
+            ← Back to Dashboard
+          </button>
+          <h1 style={{fontSize: 32, fontWeight: '800', margin: '0 0 10px 0'}}>🎯 Your Potential Matches</h1>
         </div>
-      ) : (
-        <>
-          {matches.some(m => m.user_role === 'owner' && m.status === 'pending_verification') && (
-            <div className="alert alert-info" style={{ marginBottom: '30px' }}>
-              🎉 <strong>Great news!</strong> We found {matches.filter(m => m.user_role === 'owner' && m.status === 'pending_verification').length} potential match(es) for your lost items. 
-              Click "Verify Ownership" to answer questions and confirm if it's your item.
-            </div>
-          )}
-          
-          {matches.some(m => m.user_role === 'owner' && m.status === 'verified') && (
-            <div className="alert alert-success" style={{ marginBottom: '30px' }}>
-              ✅ <strong>Verification Complete!</strong> You've been verified as the owner. 
-              Contact the finder to arrange pickup, then confirm when you receive your item.
-            </div>
-          )}
-          
-          {matches.some(m => m.user_role === 'owner' && (m.status === 'returned_to_owner' || m.status === 'returned_by_finder')) && (
-            <div className="alert alert-success" style={{ marginBottom: '30px' }}>
-              🎊 <strong>Success!</strong> Your item has been successfully returned. Case closed!
-            </div>
-          )}
-          
-          {matches.some(m => m.user_role === 'finder') && (
-            <div className="alert alert-success" style={{ marginBottom: '30px' }}>
-              📱 <strong>Match Alert!</strong> Someone has claimed {matches.filter(m => m.user_role === 'finder').length} of your found items. 
-              They are currently going through verification. You'll be contacted if verified.
-            </div>
-          )}
 
-          {matches.map(match => (
-            <div key={match.id} className="match-card">
+        {error && <div style={{background: '#FEE2E2', color: '#991B1B', padding: 15, borderRadius: 8, marginBottom: 20}}>{error}</div>}
+
+        {matches.length === 0 ? (
+          <div style={{background: 'white', border: '1px solid black', borderRadius: 20, padding: 40, textAlign: 'center'}}>
+            <h3>No matches found yet</h3>
+            <p style={{ color: '#666', marginBottom: '20px' }}>
+              We haven't found any potential matches yet. 
+              Don't worry, we'll notify you as soon as there's a match!
+            </p>
+            <Link to="/lost-item" style={{background: '#03045E', color: 'white', padding: '12px 24px', borderRadius: 8, textDecoration: 'none', display: 'inline-block'}}>
+              Report Another Lost Item
+            </Link>
+          </div>
+        ) : (
+          <>
+            {matches.some(m => m.user_role === 'owner' && m.status === 'pending_verification') && (
+              <div style={{background: '#EFF6FF', color: '#1F2937', padding: 15, borderRadius: 8, marginBottom: 30}}>
+                🎉 <strong>Great news!</strong> We found {matches.filter(m => m.user_role === 'owner' && m.status === 'pending_verification').length} potential match(es) for your lost items. 
+                Click "Verify Ownership" to answer questions and confirm if it's your item.
+              </div>
+            )}
+            
+            {matches.some(m => m.user_role === 'owner' && m.status === 'verified') && (
+              <div style={{background: '#D1FAE5', color: '#065F46', padding: 15, borderRadius: 8, marginBottom: 30}}>
+                ✅ <strong>Verification Complete!</strong> You've been verified as the owner. 
+                Contact the finder to arrange pickup, then confirm when you receive your item.
+              </div>
+            )}
+            
+            {matches.some(m => m.user_role === 'owner' && (m.status === 'returned_to_owner' || m.status === 'returned_by_finder')) && (
+              <div style={{background: '#D1FAE5', color: '#065F46', padding: 15, borderRadius: 8, marginBottom: 30}}>
+                🎊 <strong>Success!</strong> Your item has been successfully returned. Case closed!
+              </div>
+            )}
+            
+            {matches.some(m => m.user_role === 'finder') && (
+              <div style={{background: '#D1FAE5', color: '#065F46', padding: 15, borderRadius: 8, marginBottom: 30}}>
+                📱 <strong>Match Alert!</strong> Someone has claimed {matches.filter(m => m.user_role === 'finder').length} of your found items. 
+                They are currently going through verification. You'll be contacted if verified.
+              </div>
+            )}
+
+            {matches.map(match => (
+              <div key={match.id} style={{background: 'white', border: '1px solid black', borderRadius: 20, padding: 20, marginBottom: 20}}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '15px' }}>
                 <div>
                   <span className="similarity-score">
@@ -116,7 +124,7 @@ const Matches = ({ user, token }) => {
                     {match.status === 'pending_verification' && (
                       <Link 
                         to={`/verification/${match.id}`}
-                        className="btn btn-primary"
+                        style={{background: '#03045E', color: 'white', padding: '8px 16px', borderRadius: 6, textDecoration: 'none', fontSize: 14}}
                       >
                         Verify Ownership
                       </Link>
@@ -290,26 +298,27 @@ const Matches = ({ user, token }) => {
                   )}
                 </div>
               )}
-            </div>
-          ))}
+              </div>
+            ))}
 
-          <div className="card" style={{ textAlign: 'center', marginTop: '30px' }}>
-            <h4>Need Help?</h4>
-            <p style={{ color: '#666', marginBottom: '20px' }}>
-              If you're having trouble with verification or think there's an error, 
-              you can update your lost item description with more details.
-            </p>
-            <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap' }}>
-              <Link to="/lost-item" className="btn btn-secondary">
-                Report Another Item
-              </Link>
-              <Link to="/dashboard" className="btn btn-primary">
-                Back to Dashboard
-              </Link>
+            <div style={{background: 'white', border: '1px solid black', borderRadius: 20, padding: 30, textAlign: 'center', marginTop: 30}}>
+              <h4>Need Help?</h4>
+              <p style={{ color: '#666', marginBottom: '20px' }}>
+                If you're having trouble with verification or think there's an error, 
+                you can update your lost item description with more details.
+              </p>
+              <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap' }}>
+                <Link to="/lost-item" style={{background: 'transparent', color: '#374151', border: '2px solid #D1D5DB', padding: '12px 24px', borderRadius: 8, textDecoration: 'none'}}>
+                  Report Another Item
+                </Link>
+                <Link to="/dashboard" style={{background: '#03045E', color: 'white', padding: '12px 24px', borderRadius: 8, textDecoration: 'none'}}>
+                  Back to Dashboard
+                </Link>
+              </div>
             </div>
-          </div>
-        </>
-      )}
+          </>
+        )}
+      </div>
     </div>
   );
 };

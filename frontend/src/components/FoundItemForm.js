@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { itemsAPI } from '../services/api';
 
 const FoundItemForm = ({ token, user }) => {
@@ -525,19 +525,20 @@ const FoundItemForm = ({ token, user }) => {
   }
 
   return (
-    <div style={styles.container}>
-      <div style={styles.header}>
-        <button 
-          style={styles.backButton}
-          onClick={() => navigate('/dashboard')}
-        >
-          Back
-        </button>
-        <h1 style={styles.title}>Report Found Item</h1>
-        <p style={styles.subtitle}>Help a fellow student find their item</p>
-      </div>
+    <div style={{minHeight: '100vh', background: '#EFF6FF', padding: 20, fontFamily: 'Inter, sans-serif'}}>
+      <div style={{maxWidth: 800, margin: '0 auto'}}>
+        <div style={{marginBottom: 30}}>
+          <button 
+            style={{background: 'none', border: 'none', color: '#03045E', fontSize: 16, cursor: 'pointer', marginBottom: 20, display: 'flex', alignItems: 'center', gap: 8}}
+            onClick={() => navigate('/dashboard')}
+          >
+            ← Back
+          </button>
+          <h1 style={{fontSize: 32, fontWeight: '800', margin: '0 0 10px 0'}}>Report Found Item</h1>
+          <p style={{fontSize: 18, color: '#666', margin: 0}}>Help a fellow student find their item</p>
+        </div>
 
-      <form style={styles.form} onSubmit={handleSubmit}>
+        <form style={{background: 'white', borderRadius: 16, padding: 40, boxShadow: '0 10px 25px rgba(0,0,0,0.1)'}} onSubmit={handleSubmit}>
         {/* Basic Information */}
         <div style={styles.section}>
           <h3 style={styles.sectionTitle}>BASIC INFORMATION</h3>
@@ -841,7 +842,8 @@ const FoundItemForm = ({ token, user }) => {
             {loading ? 'Submitting...' : 'Submit Found Item'}
           </button>
         </div>
-      </form>
+        </form>
+      </div>
     </div>
   );
 };
