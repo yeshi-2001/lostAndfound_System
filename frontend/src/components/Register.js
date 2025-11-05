@@ -24,6 +24,10 @@ const Register = ({ onLogin }) => {
     isValid: false,
     message: ''
   });
+  const [regNumberValidation, setRegNumberValidation] = useState({
+    isValid: false,
+    message: ''
+  });
 
   const departments = [
     'Department of Computer Science',
@@ -57,6 +61,20 @@ const Register = ({ onLogin }) => {
     }
   };
 
+  const validateRegistrationNumber = (regNumber) => {
+    // Format: 2 digits + 3 letters + 2 digits (e.g., 21com76)
+    const regNumberRegex = /^\d{2}[a-zA-Z]{3}\d{2}$/;
+    const isValid = regNumberRegex.test(regNumber);
+    
+    if (!regNumber) {
+      return { isValid: false, message: '' };
+    } else if (!isValid) {
+      return { isValid: false, message: 'Format: 2 digits + 3 letters + 2 digits (e.g., 21com76)' };
+    } else {
+      return { isValid: true, message: 'Valid registration number format' };
+    }
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -68,6 +86,8 @@ const Register = ({ onLogin }) => {
       setPasswordValidation(validatePassword(value));
     } else if (name === 'email') {
       setEmailValidation(validateEmail(value));
+    } else if (name === 'registration_number') {
+      setRegNumberValidation(validateRegistrationNumber(value));
     }
   };
 
@@ -75,6 +95,13 @@ const Register = ({ onLogin }) => {
     e.preventDefault();
     setLoading(true);
     setError('');
+
+    // Check registration number validation
+    if (!regNumberValidation.isValid && formData.registration_number) {
+      setError('Please enter a valid registration number format (e.g., 21com76)');
+      setLoading(false);
+      return;
+    }
 
     // Check email validation
     if (!emailValidation.isValid && formData.email) {
@@ -130,19 +157,26 @@ const Register = ({ onLogin }) => {
           />
         </div>
         
-        <div style={{width: '384px', height: '48px', left: '760px', top: '215px', position: 'absolute', backgroundColor: 'rgba(239, 245, 253, 0.5)', border: '1px solid rgba(0,0,0,0.6)', borderRadius: '4px'}}>
+        <div style={{width: '384px', height: '48px', left: '760px', top: '215px', position: 'absolute', backgroundColor: 'rgba(239, 245, 253, 0.5)', border: `1px solid ${formData.registration_number ? (regNumberValidation.isValid ? '#28a745' : '#dc3545') : 'rgba(0,0,0,0.6)'}`, borderRadius: '4px'}}>
           <input
             type="text"
             name="registration_number"
             value={formData.registration_number}
             onChange={handleChange}
-            placeholder="Enter your Registration number"
+            placeholder="Registration number (e.g., 21com76)"
             style={{width: '100%', height: '100%', border: 'none', backgroundColor: 'transparent', padding: '0 45px', fontSize: '18px', fontFamily: 'Calibri', color: 'black', outline: 'none'}}
             required
           />
         </div>
         
-        <div style={{width: '384px', height: '48px', left: '760px', top: '286px', position: 'absolute', backgroundColor: 'rgba(239, 245, 253, 0.5)', border: `1px solid ${formData.email ? (emailValidation.isValid ? '#28a745' : '#dc3545') : 'rgba(0,0,0,0.6)'}`, borderRadius: '4px'}}>
+        {/* Registration Number Validation */}
+        {formData.registration_number && regNumberValidation.message && (
+          <div style={{width: '384px', left: '760px', top: '271px', position: 'absolute', padding: '5px 10px', fontSize: '14px', fontFamily: 'Calibri', color: regNumberValidation.isValid ? '#28a745' : '#dc3545'}}>
+            {regNumberValidation.isValid ? '✓' : '✗'} {regNumberValidation.message}
+          </div>
+        )}
+        
+        <div style={{width: '384px', height: '48px', left: '760px', top: (formData.registration_number && regNumberValidation.message ? '306px' : '286px'), position: 'absolute', backgroundColor: 'rgba(239, 245, 253, 0.5)', border: `1px solid ${formData.email ? (emailValidation.isValid ? '#28a745' : '#dc3545') : 'rgba(0,0,0,0.6)'}`, borderRadius: '4px'}}>
           <input
             type="email"
             name="email"
@@ -156,12 +190,17 @@ const Register = ({ onLogin }) => {
         
         {/* Email Validation */}
         {formData.email && emailValidation.message && (
-          <div style={{width: '384px', left: '760px', top: '342px', position: 'absolute', padding: '5px 10px', fontSize: '14px', fontFamily: 'Calibri', color: emailValidation.isValid ? '#28a745' : '#dc3545'}}>
+          <div style={{width: '384px', left: '760px', top: (formData.registration_number && regNumberValidation.message ? '362px' : '342px'), position: 'absolute', padding: '5px 10px', fontSize: '14px', fontFamily: 'Calibri', color: emailValidation.isValid ? '#28a745' : '#dc3545'}}>
             {emailValidation.isValid ? '✓' : '✗'} {emailValidation.message}
           </div>
         )}
         
-        <div style={{width: '384px', height: '48px', left: '760px', top: formData.email && emailValidation.message ? '383px' : '363px', position: 'absolute', backgroundColor: 'rgba(239, 245, 253, 0.5)', border: '1px solid rgba(0,0,0,0.6)', borderRadius: '4px'}}>
+        <div style={{width: '384px', height: '48px', left: '760px', top: (() => {
+          let top = 363;
+          if (formData.registration_number && regNumberValidation.message) top += 20;
+          if (formData.email && emailValidation.message) top += 20;
+          return top + 'px';
+        })(), position: 'absolute', backgroundColor: 'rgba(239, 245, 253, 0.5)', border: '1px solid rgba(0,0,0,0.6)', borderRadius: '4px'}}>
           <select
             name="department"
             value={formData.department}
@@ -176,7 +215,12 @@ const Register = ({ onLogin }) => {
           </select>
         </div>
         
-        <div style={{width: '384px', height: '48px', left: '760px', top: (formData.email && emailValidation.message ? '454px' : '434px'), position: 'absolute', backgroundColor: 'rgba(239, 245, 253, 0.5)', border: '1px solid rgba(0,0,0,0.6)', borderRadius: '4px'}}>
+        <div style={{width: '384px', height: '48px', left: '760px', top: (() => {
+          let top = 434;
+          if (formData.registration_number && regNumberValidation.message) top += 20;
+          if (formData.email && emailValidation.message) top += 20;
+          return top + 'px';
+        })(), position: 'absolute', backgroundColor: 'rgba(239, 245, 253, 0.5)', border: '1px solid rgba(0,0,0,0.6)', borderRadius: '4px'}}>
           <input
             type="password"
             name="password"
@@ -190,7 +234,12 @@ const Register = ({ onLogin }) => {
         
         {/* Password Validation */}
         {formData.password && (
-          <div style={{width: '384px', left: '760px', top: (formData.email && emailValidation.message ? '510px' : '490px'), position: 'absolute', backgroundColor: 'white', border: '1px solid #ddd', borderRadius: '4px', padding: '10px', fontSize: '14px', fontFamily: 'Calibri'}}>
+          <div style={{width: '384px', left: '760px', top: (() => {
+            let top = 490;
+            if (formData.registration_number && regNumberValidation.message) top += 20;
+            if (formData.email && emailValidation.message) top += 20;
+            return top + 'px';
+          })(), position: 'absolute', backgroundColor: 'white', border: '1px solid #ddd', borderRadius: '4px', padding: '10px', fontSize: '14px', fontFamily: 'Calibri'}}>
             <div style={{fontWeight: 'bold', marginBottom: '8px', color: '#03045E'}}>Password Requirements:</div>
             <div style={{color: passwordValidation.length ? '#28a745' : '#dc3545'}}>
               {passwordValidation.length ? '✓' : '✗'} At least 8 characters
@@ -210,7 +259,13 @@ const Register = ({ onLogin }) => {
           </div>
         )}
         
-        <div style={{width: '384px', height: '48px', left: '760px', top: formData.password ? '614px' : '514px', position: 'absolute', backgroundColor: 'rgba(239, 245, 253, 0.5)', border: '1px solid rgba(0,0,0,0.6)', borderRadius: '4px'}}>
+        <div style={{width: '384px', height: '48px', left: '760px', top: (() => {
+          let top = 514;
+          if (formData.registration_number && regNumberValidation.message) top += 20;
+          if (formData.email && emailValidation.message) top += 20;
+          if (formData.password) top += 100;
+          return top + 'px';
+        })(), position: 'absolute', backgroundColor: 'rgba(239, 245, 253, 0.5)', border: '1px solid rgba(0,0,0,0.6)', borderRadius: '4px'}}>
           <input
             type="tel"
             name="contact_number"
@@ -224,14 +279,26 @@ const Register = ({ onLogin }) => {
         
         <button 
           type="submit" 
-          style={{width: '384px', height: '64px', left: '760px', top: formData.password ? '682px' : '582px', position: 'absolute', backgroundColor: '#03045E', borderRadius: '10px', border: 'none', color: 'white', fontSize: '24px', fontFamily: 'Calibri', cursor: 'pointer'}}
+          style={{width: '384px', height: '64px', left: '760px', top: (() => {
+            let top = 582;
+            if (formData.registration_number && regNumberValidation.message) top += 20;
+            if (formData.email && emailValidation.message) top += 20;
+            if (formData.password) top += 100;
+            return top + 'px';
+          })(), position: 'absolute', backgroundColor: '#03045E', borderRadius: '10px', border: 'none', color: 'white', fontSize: '24px', fontFamily: 'Calibri', cursor: 'pointer'}}
           disabled={loading}
         >
           {loading ? 'Signing Up...' : 'Sign Up'}
         </button>
       </form>
       
-      <div style={{left: '815px', top: formData.password ? '772px' : '672px', position: 'absolute', textAlign: 'center', color: 'black', fontSize: '24px', fontFamily: 'Calibri'}}>
+      <div style={{left: '815px', top: (() => {
+        let top = 672;
+        if (formData.registration_number && regNumberValidation.message) top += 20;
+        if (formData.email && emailValidation.message) top += 20;
+        if (formData.password) top += 100;
+        return top + 'px';
+      })(), position: 'absolute', textAlign: 'center', color: 'black', fontSize: '24px', fontFamily: 'Calibri'}}>
         Already have an account? 
         <span style={{color: '#03045E', cursor: 'pointer', marginLeft: '5px'}} onClick={handleSignInClick}>Sign In</span>
       </div>
