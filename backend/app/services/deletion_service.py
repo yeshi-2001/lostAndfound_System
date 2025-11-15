@@ -3,7 +3,7 @@ from sqlalchemy import and_
 from app.models.found_item import FoundItem
 from app.models.lost_item import LostItem
 from app.models.match import Match
-from app.models.student import Student
+from app.models.user import User
 from app import db
 
 class DeletionService:
@@ -20,7 +20,7 @@ class DeletionService:
             if not item:
                 return False, "Item not found"
             
-            if item.student_id != user_id:
+            if item.user_id != user_id:
                 return False, "Unauthorized"
             
             # Check if item has active matches
@@ -175,7 +175,7 @@ class DeletionService:
             
             old_found_items = FoundItem.query.filter(
                 and_(
-                    FoundItem.student_id == user_id,
+                    FoundItem.user_id == user_id,
                     FoundItem.created_at < old_cutoff,
                     FoundItem.deleted_at.is_(None),
                     ~FoundItem.id.in_(
@@ -188,7 +188,7 @@ class DeletionService:
             
             old_lost_items = LostItem.query.filter(
                 and_(
-                    LostItem.student_id == user_id,
+                    LostItem.user_id == user_id,
                     LostItem.created_at < old_cutoff,
                     LostItem.deleted_at.is_(None),
                     ~LostItem.id.in_(
