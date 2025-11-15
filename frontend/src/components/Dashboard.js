@@ -63,7 +63,7 @@ const Dashboard = ({ user }) => {
       
       if (response.ok) {
         const data = await response.json();
-        console.log('Welcome info:', data); // Debug log
+
         setWelcomeInfo(data);
       }
     } catch (error) {
@@ -71,24 +71,7 @@ const Dashboard = ({ user }) => {
     }
   };
 
-  // Test function to simulate different time periods
-  const testWelcomeMessage = async (days) => {
-    try {
-      const response = await fetch(`/api/dashboard/test-welcome/${days}`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        console.log(`Test ${days} days:`, data.welcome_message);
-        alert(`${days} days ago: ${data.welcome_message}`);
-      }
-    } catch (error) {
-      console.error('Error testing welcome message:', error);
-    }
-  };
+
 
   const handleDeleteItem = (itemId, itemType, itemName) => {
     setDeleteModal({ isOpen: true, itemId, itemType, itemName });
@@ -198,10 +181,6 @@ const Dashboard = ({ user }) => {
         <div style={{marginBottom: 30}}>
           <h1 style={{fontSize: 32, fontWeight: '800', margin: '0 0 10px 0'}}>{welcomeInfo.welcome_message} {user?.name || 'User'} 👋</h1>
           <p style={{fontSize: 18, color: '#666', margin: '0 0 10px 0'}}>{welcomeInfo.activity_message}</p>
-          {/* Debug info - remove in production */}
-          <div style={{fontSize: 12, color: '#999', marginBottom: 10}}>
-            Debug: {welcomeInfo.days_since_visit} days, {welcomeInfo.hours_since_visit?.toFixed(1)} hours since last visit
-          </div>
           {welcomeInfo.change_details.length > 0 && (
             <div style={{background: '#EBF5FD', padding: 15, borderRadius: 10, border: '1px solid #2E72F9'}}>
               <div style={{fontSize: 14, fontWeight: '600', color: '#03045E', marginBottom: 8}}>What's New:</div>
@@ -275,14 +254,8 @@ const Dashboard = ({ user }) => {
               </div>
             )}
           </div>
-          <div style={{display: 'flex', gap: 10}}>
-            <div style={{padding: '10px 20px', border: '2px solid black', borderRadius: 6, background: 'white', fontSize: 12, display: 'flex', alignItems: 'center'}}>
-              📅 {new Date().toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' })}
-            </div>
-            {/* Test buttons - remove in production */}
-            <button onClick={() => testWelcomeMessage(1)} style={{padding: '8px 12px', fontSize: 10, background: '#2E72F9', color: 'white', border: 'none', borderRadius: 4}}>Test 1 day</button>
-            <button onClick={() => testWelcomeMessage(3)} style={{padding: '8px 12px', fontSize: 10, background: '#2E72F9', color: 'white', border: 'none', borderRadius: 4}}>Test 3 days</button>
-            <button onClick={() => testWelcomeMessage(14)} style={{padding: '8px 12px', fontSize: 10, background: '#2E72F9', color: 'white', border: 'none', borderRadius: 4}}>Test 2 weeks</button>
+          <div style={{padding: '10px 20px', border: '2px solid black', borderRadius: 6, background: 'white', fontSize: 12, display: 'flex', alignItems: 'center'}}>
+            📅 {new Date().toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' })}
           </div>
         </div>
         

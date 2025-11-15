@@ -22,10 +22,9 @@ def get_welcome_info():
     # Calculate days since last visit
     current_time = datetime.utcnow()
     
-    # For testing: if last_login is null or very recent, simulate different periods
+    # Use actual last_login or set to current time for first-time users
     if not user.last_login:
-        # Simulate 3 days ago for demo
-        last_login = current_time - timedelta(days=3)
+        last_login = current_time
     else:
         last_login = user.last_login
     
@@ -114,45 +113,3 @@ def get_changes_since_last_visit(user_id, last_login):
         'completed_matches': completed_matches
     }
 
-@dashboard_bp.route('/test-welcome/<int:days>', methods=['GET'])
-@jwt_required()
-def test_welcome_message(days):
-    """Test endpoint to simulate different time periods"""
-    user_id = get_jwt_identity()
-    user = User.query.get(user_id)
-    
-    if not user:
-        return jsonify({'error': 'User not found'}), 404
-    
-    # Simulate time difference
-    current_time = datetime.utcnow()
-    simulated_last_login = current_time - timedelta(days=days)
-    
-    time_diff = current_time - simulated_last_login
-    days_since_visit = time_diff.days
-    hours_since_visit = time_diff.total_seconds() / 3600
-    
-    # Generate welcome message
-    if hours_since_visit < 1:
-        welcome_message = "Welcome back!"
-    elif hours_since_visit < 24:
-        hours = int(hours_since_visit)
-        welcome_message = f"Welcome back! It's been {hours} hour{'s' if hours != 1 else ''} since your last visit"
-    elif days_since_visit == 1:
-        welcome_message = "Welcome back! It's been 1 day since your last visit"
-    elif days_since_visit < 7:
-        welcome_message = f"Welcome back! It's been {days_since_visit} days since your last visit"
-    elif days_since_visit < 30:
-        weeks = days_since_visit // 7
-        welcome_message = f"Welcome back! It's been {weeks} week{'s' if weeks > 1 else ''} since your last visit"
-    else:
-        months = days_since_visit // 30
-        welcome_message = f"Welcome back! It's been {months} month{'s' if months > 1 else ''} since your last visit"
-    
-    return jsonify({
-        'welcome_message': welcome_message,
-        'days_simulated': days,
-        'days_since_visit': days_since_visit,
-        'hours_since_visit': hours_since_visit,
-        'simulated_last_login': simulated_last_login.isoformat()
-    }), 200

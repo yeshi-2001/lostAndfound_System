@@ -14,6 +14,7 @@ class User(db.Model):
     contact_number = db.Column(db.String(20), nullable=False)  # Phone number
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    last_login = db.Column(db.DateTime)  # Track last login for welcome messages
     
     # Relationships
     found_items = db.relationship('FoundItem', backref='user', lazy=True)
