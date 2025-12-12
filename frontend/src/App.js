@@ -15,6 +15,7 @@ import Matches from './components/Matches';
 import Verification from './components/Verification';
 import ItemCleanup from './components/ItemCleanup';
 import Notifications from './components/Notifications';
+import MyItems from './components/MyItems';
 import Navbar from './components/Navbar';
 import Sidebar from './components/Sidebar';
 import './App.css';
@@ -114,6 +115,10 @@ function AppContent() {
           <Route 
             path="/notifications" 
             element={user ? <Notifications user={user} token={token} /> : <Navigate to="/login" />} 
+          />
+          <Route 
+            path="/my-items" 
+            element={user ? <MyItems user={user} token={token} /> : <Navigate to="/login" />} 
           />
           <Route 
             path="/" 
