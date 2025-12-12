@@ -94,18 +94,7 @@ const Matches = ({ user, token }) => {
               </div>
             )}
             
-            {matches.some(m => m.user_role === 'owner' && (m.status === 'returned_to_owner' || m.status === 'returned_by_finder')) && (
-              <div style={{background: '#D1FAE5', color: '#065F46', padding: 15, borderRadius: 8, marginBottom: 30}}>
-                🎊 <strong>Success!</strong> Your item has been successfully returned. Case closed!
-              </div>
-            )}
-            
-            {matches.some(m => m.user_role === 'finder') && (
-              <div style={{background: '#D1FAE5', color: '#065F46', padding: 15, borderRadius: 8, marginBottom: 30}}>
-                📱 <strong>Match Alert!</strong> Someone has claimed {matches.filter(m => m.user_role === 'finder').length} of your found items. 
-                They are currently going through verification. You'll be contacted if verified.
-              </div>
-            )}
+
 
             {matches.map(match => (
               <div key={match.id} style={{background: 'white', border: '1px solid black', borderRadius: 20, padding: 20, marginBottom: 20}}>

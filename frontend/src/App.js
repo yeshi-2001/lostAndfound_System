@@ -14,6 +14,7 @@ import Profile from './components/Profile';
 import Matches from './components/Matches';
 import Verification from './components/Verification';
 import ItemCleanup from './components/ItemCleanup';
+import Notifications from './components/Notifications';
 import Navbar from './components/Navbar';
 import Sidebar from './components/Sidebar';
 import './App.css';
@@ -109,6 +110,10 @@ function AppContent() {
           <Route 
             path="/cleanup" 
             element={user ? <ItemCleanup user={user} token={token} /> : <Navigate to="/login" />} 
+          />
+          <Route 
+            path="/notifications" 
+            element={user ? <Notifications user={user} token={token} /> : <Navigate to="/login" />} 
           />
           <Route 
             path="/" 

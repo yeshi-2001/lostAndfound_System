@@ -87,6 +87,12 @@ export const returnsAPI = {
   getReturnStatus: (matchId) => api.get(`/returns/status/${matchId}`),
 };
 
+// Notifications API
+export const notificationAPI = {
+  getNotifications: (token) => api.get('/notifications'),
+  markAsRead: (notificationId, token) => api.put(`/notifications/${notificationId}/read`),
+};
+
 // Debug API
 export const debugAPI = {
   getDatabaseInfo: () => api.get('/debug/database'),
