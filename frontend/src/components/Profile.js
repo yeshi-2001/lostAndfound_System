@@ -602,6 +602,23 @@ const Profile = ({ user, token, onLogout }) => {
                 <option value="Faculty of Applied Science">Faculty of Applied Science</option>
                 <option value="Faculty of Communication and Business Studies">Faculty of Communication and Business Studies</option>
                 <option value="Faculty of Siddha Medicine">Faculty of Siddha Medicine</option>
+                <option value="Faculty of Engineering">Faculty of Engineering</option>
+                <option value="Faculty of Medicine">Faculty of Medicine</option>
+                <option value="Faculty of Arts">Faculty of Arts</option>
+                <option value="Faculty of Science">Faculty of Science</option>
+                <option value="Faculty of Management">Faculty of Management</option>
+                <option value="Faculty of Law">Faculty of Law</option>
+                <option value="Faculty of Education">Faculty of Education</option>
+                <option value="Faculty of Agriculture">Faculty of Agriculture</option>
+                <option value="Faculty of Veterinary Medicine">Faculty of Veterinary Medicine</option>
+                <option value="Faculty of Dental Sciences">Faculty of Dental Sciences</option>
+                <option value="Faculty of Pharmacy">Faculty of Pharmacy</option>
+                <option value="Faculty of Architecture">Faculty of Architecture</option>
+                <option value="Faculty of Social Sciences">Faculty of Social Sciences</option>
+                <option value="Faculty of Information Technology">Faculty of Information Technology</option>
+                <option value="Faculty of Computing">Faculty of Computing</option>
+                <option value="Faculty of Economics">Faculty of Economics</option>
+                <option value="Faculty of Fine Arts">Faculty of Fine Arts</option>
               </select>
             ) : (
               <input

@@ -21,18 +21,17 @@ const Sidebar = ({ user, onLogout }) => {
   }, []);
 
   const menuItems = [
-    { path: '/dashboard', label: 'Dashboard', icon: '⌂' },
-    { path: '/lost-item', label: 'Report Lost Item', icon: '⚠' },
-    { path: '/found-item', label: 'Report Found Item', icon: '⊞' },
-    { path: '/my-items', label: 'My Items', icon: '☰' },
-    { path: '/matches', label: 'Matches', icon: '◉' },
-    { path: '/notifications', label: 'Notifications', icon: '◐' },
-    { path: '/messages', label: 'Messages', icon: '✉' }
+    { path: '/dashboard', label: 'Dashboard' },
+    { path: '/lost-item', label: 'Report Lost Item' },
+    { path: '/found-item', label: 'Report Found Item' },
+    { path: '/my-items', label: 'My Items' },
+    { path: '/matches', label: 'Matches' },
+    { path: '/notifications', label: 'Notifications' }
   ];
 
   const bottomItems = [
-    { path: '/profile', label: 'Settings', icon: '⚙' },
-    { path: '/help', label: 'Help & Support', icon: '?' }
+    { path: '/profile', label: 'Settings' },
+    { path: '/help', label: 'Help & Support' }
   ];
 
   const handleLogout = () => {
@@ -51,33 +50,41 @@ const Sidebar = ({ user, onLogout }) => {
       </div>
 
       {/* Main Navigation */}
-      <nav style={{flex: 1, padding: '0 20px'}}>
+      <nav style={{flex: 1, padding: '20px 15px'}}>
         {menuItems.map((item) => {
           const isActive = location.pathname === item.path;
-          return isActive ? (
-            <div key={item.path} style={{background: 'white', padding: 15, borderRadius: 15, marginBottom: 20, boxShadow: '0 4px 8px rgba(0,0,0,0.1)'}}>
-              <div style={{color: '#03045E', fontSize: 16, fontWeight: '700', display: 'flex', alignItems: 'center', gap: 8}}>
-                <span style={{color: '#03045E', fontSize: 18}}>{item.icon}</span>
-                {item.label}
-              </div>
-            </div>
-          ) : (
+          return (
             <Link
               key={item.path}
               to={item.path}
               style={{
                 textDecoration: 'none',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 8,
-                padding: '15px 0',
-                color: '#03045E',
-                fontSize: 16,
-                fontWeight: '700'
+                display: 'block',
+                padding: '16px 20px',
+                margin: '8px 0',
+                borderRadius: 12,
+                background: isActive ? 'white' : 'transparent',
+                color: isActive ? '#03045E' : '#1e40af',
+                fontSize: 15,
+                fontWeight: isActive ? '700' : '600',
+                boxShadow: isActive ? '0 4px 12px rgba(0,0,0,0.15)' : 'none',
+                transition: 'all 0.3s ease',
+                border: isActive ? 'none' : '1px solid rgba(255,255,255,0.2)'
               }}
               onClick={() => setIsMobileOpen(false)}
+              onMouseEnter={(e) => {
+                if (!isActive) {
+                  e.target.style.background = 'rgba(255,255,255,0.1)';
+                  e.target.style.transform = 'translateX(4px)';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!isActive) {
+                  e.target.style.background = 'transparent';
+                  e.target.style.transform = 'translateX(0)';
+                }
+              }}
             >
-              <span style={{color: '#03045E', fontSize: 18}}>{item.icon}</span>
               {item.label}
             </Link>
           );
@@ -94,17 +101,24 @@ const Sidebar = ({ user, onLogout }) => {
               to={item.path}
               style={{
                 textDecoration: 'none',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 10,
-                padding: '10px 0',
-                color: '#03045E',
-                fontSize: 16,
-                fontWeight: '700'
+                display: 'block',
+                padding: '12px 20px',
+                margin: '4px 0',
+                borderRadius: 8,
+                background: isActive ? 'rgba(255,255,255,0.2)' : 'transparent',
+                color: '#1e40af',
+                fontSize: 14,
+                fontWeight: '600',
+                transition: 'all 0.2s ease'
               }}
               onClick={() => setIsMobileOpen(false)}
+              onMouseEnter={(e) => {
+                e.target.style.background = 'rgba(255,255,255,0.15)';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.background = isActive ? 'rgba(255,255,255,0.2)' : 'transparent';
+              }}
             >
-              <span style={{color: '#03045E', fontSize: 18}}>{item.icon}</span>
               {item.label}
             </Link>
           );
@@ -112,18 +126,27 @@ const Sidebar = ({ user, onLogout }) => {
         
         <div 
           style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 10,
-            padding: '10px 0',
-            color: '#03045E',
-            fontSize: 16,
-            fontWeight: '700',
-            cursor: 'pointer'
+            padding: '12px 20px',
+            margin: '8px 0 0 0',
+            borderRadius: 8,
+            background: 'transparent',
+            color: '#dc2626',
+            fontSize: 14,
+            fontWeight: '600',
+            cursor: 'pointer',
+            transition: 'all 0.2s ease',
+            border: '1px solid rgba(220, 38, 38, 0.3)'
           }}
           onClick={handleLogout}
+          onMouseEnter={(e) => {
+            e.target.style.background = 'rgba(220, 38, 38, 0.1)';
+            e.target.style.borderColor = '#dc2626';
+          }}
+          onMouseLeave={(e) => {
+            e.target.style.background = 'transparent';
+            e.target.style.borderColor = 'rgba(220, 38, 38, 0.3)';
+          }}
         >
-          <span style={{color: '#03045E', fontSize: 18}}>⏻</span>
           Log Out
         </div>
       </div>
